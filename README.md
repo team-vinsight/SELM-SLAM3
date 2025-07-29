@@ -11,5 +11,12 @@ We are currently uploading and setting up the GitHub repository. Stay tuned for 
 ## Related Paper:
 M. Bamdad, H.-P. Hutter, and A. Darvishy. "Deep Learning-Powered Visual SLAM Aimed at Assisting Visually Impaired Navigation." 20th International Conference on Computer Vision Theory and Applications (2025).
 
+## Data Conversion Tools
+
+To convert the TartanAir dataset into a format compatible with ORB-SLAM3, please refer to the following script:
+
+🔗 [TartanAir to ORB-SLAM3 Converter](https://github.com/banafshebamdad/groundtruth_generation/tree/master/scripts/TartanAir/tartanair_convertor)
+
+If you have any questions about how to use the script, feel free to reach out at bamdad@ifi.uzh.ch or banafshebamdad@gmail.com.
 
 # Under construction ...
