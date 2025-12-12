@@ -231,13 +231,6 @@ Examples/RGB-D/<CONFIG>.yaml \
 
 ---
 
-## Notes
-
-* Dataset paths must be adapted to your local filesystem.
-* Association files follow the standard ORB-SLAM3 format.
-* Configuration files (`TUM1.yaml`, `TUM2.yaml`, `TUM3.yaml`, etc.) are provided in `Examples/RGB-D/`.
-
----
 
 ## Dataset Conversion (TartanAir)
 
