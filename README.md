@@ -186,6 +186,59 @@ chmod +x build.sh
 
 ---
 
+## Running SELM-SLAM3 on Public Datasets
+
+SELM-SLAM3 follows the same execution interface as ORB-SLAM3 for RGB-D input.
+The general command format is:
+
+```bash
+./Examples/RGB-D/rgbd_tum \
+Vocabulary/ORBvoc.txt \
+Examples/RGB-D/<CONFIG>.yaml \
+<DATASET_PATH> \
+<ASSOCIATIONS_FILE>
+```
+
+---
+
+## TUM RGB-D Dataset (examle)
+
+```bash
+./Examples/RGB-D/rgbd_tum Vocabulary/ORBvoc.txt Examples/RGB-D/TUM1.yaml \
+/path/to/rgbd_dataset_freiburg1_xyz \
+/path/to/rgbd_dataset_freiburg1_xyz/associations.txt
+```
+
+---
+
+## TartanAir Dataset (examle)
+
+```bash
+./Examples/RGB-D/rgbd_tum Vocabulary/ORBvoc.txt Examples/RGB-D/TartanAir.yaml \
+/path/to/TartanAir/hospital_hard/P037 \
+/path/to/TartanAir/hospital_hard/P037/associations.txt
+```
+
+---
+
+## ICL-NUIM Dataset (examle)
+
+```bash
+./Examples/RGB-D/rgbd_tum Vocabulary/ORBvoc.txt Examples/RGB-D/ICL-NUIM.yaml \
+/path/to/ICL-NUIM/living_room_traj1 \
+/path/to/ICL-NUIM/living_room_traj1/associations.txt
+```
+
+---
+
+## Notes
+
+* Dataset paths must be adapted to your local filesystem.
+* Association files follow the standard ORB-SLAM3 format.
+* Configuration files (`TUM1.yaml`, `TUM2.yaml`, `TUM3.yaml`, etc.) are provided in `Examples/RGB-D/`.
+
+---
+
 ## Dataset Conversion (TartanAir)
 
 To convert TartanAir datasets into ORB-SLAM3 format:
