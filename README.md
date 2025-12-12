@@ -1,22 +1,220 @@
+
 # SELM-SLAM3
 
-SELM-SLAM3 is a deep learning-enhanced RGB-D SLAM framework built upon ORB-SLAM3. It integrates SuperPoint for robust feature extraction and LightGlue for precise feature matching, significantly enhancing localization accuracy in challenging conditions such as low-texture environments and fast-motion scenarios.
+SELM-SLAM3 is a deep learning–enhanced RGB-D SLAM framework built upon **ORB-SLAM3**.
+It integrates **SuperPoint** for feature extraction and **LightGlue** for feature matching using **ONNX Runtime (C++ API)**, enabling robust and efficient inference without Python or PyTorch at runtime.
 
-Our evaluations on TUM RGB-D, ICL-NUIM, and TartanAir datasets demonstrate SELM-SLAM3's superior tracking accuracy, outperforming ORB-SLAM3 by an average of 87.84% and surpassing state-of-the-art RGB-D SLAM systems by 36.77%. This framework offers a reliable and adaptable solution for real-world assistive navigation applications.
+SELM-SLAM3 is designed for challenging scenarios such as **low-texture environments** and **fast motion**.
 
-This repository was forked from [SUPERSLAM3](https://github.com/isarlab-department-engineering/SUPERSLAM3), which itself is based on ORB-SLAM3. However, SELM-SLAM3 diverges significantly in its approach to enhancing ORB-SLAM3. While SuperSLAM3 focuses on replacing ORBExtractor with SuperPoint using PyTorch, SELM-SLAM3 implements a new architecture that replaces both feature extraction and matching modules with ONNX-based SuperPoint and LightGlue. Additionally, SELM-SLAM3 eliminates the Bag-of-Words component and implements a new matching strategy for improved performance.
+## Key Contributions
 
-We are currently uploading and setting up the GitHub repository. Stay tuned for updates! *(Last updated: February 6, 2025)*
+* Replacement of ORB feature extraction with **ONNX-based SuperPoint**
+* Replacement of descriptor matching with **ONNX-based LightGlue**
+* New matching strategy tailored for deep features
+* Fully C++ inference pipeline (no Python runtime dependency)
 
-## Related Paper:
-M. Bamdad, H.-P. Hutter, and A. Darvishy. "Deep Learning-Powered Visual SLAM Aimed at Assisting Visually Impaired Navigation." 20th International Conference on Computer Vision Theory and Applications (2025).
+## Performance
 
-## Data Conversion Tools
+Evaluations on **TUM RGB-D**, **ICL-NUIM**, and **TartanAir** datasets demonstrate:
 
-To convert the TartanAir dataset into a format compatible with ORB-SLAM3, please refer to the following script:
+* **87.84% average improvement** over ORB-SLAM3
+* **36.77% improvement** over state-of-the-art RGB-D SLAM systems
+
+This framework targets **real-world assistive navigation** applications, particularly for visually impaired users.
+
+---
+
+## Repository Origin
+
+This repository was forked from
+[SUPERSLAM3](https://github.com/isarlab-department-engineering/SUPERSLAM3),
+which itself is based on **ORB-SLAM3**.
+
+Unlike SuperSLAM3 (which relies on PyTorch), SELM-SLAM3 uses ONNX Runtime for all deep learning inference.
+
+---
+
+## System Requirements
+
+* **OS:** Ubuntu 20.04 (tested)
+* **Compiler:** GCC ≥ 8 (C++14 required)
+* **CUDA:** 11.8
+* **cuDNN:** compatible with CUDA 11.8
+* **GPU:** NVIDIA GPU recommended
+* **OpenCV:** 3.4.0 (required by ORB-SLAM3)
+
+---
+
+## Prerequisites
+
+```bash
+sudo add-apt-repository "deb http://security.ubuntu.com/ubuntu xenial-security main"
+sudo apt update
+
+sudo apt-get install build-essential cmake git pkg-config
+sudo apt-get install libgtk2.0-dev libavcodec-dev libavformat-dev libswscale-dev
+sudo apt-get install python-dev python-numpy
+sudo apt-get install libtbb2 libtbb-dev
+sudo apt-get install libjpeg-dev libpng-dev libtiff-dev libdc1394-22-dev libjasper-dev
+sudo apt-get install libglew-dev libboost-all-dev libssl-dev
+sudo apt-get install libeigen3-dev
+sudo apt install libcanberra-gtk-module
+```
+
+---
+
+## Pangolin (Visualization)
+
+SELM-SLAM3 requires **Pangolin** for visualization.
+Use the following **tested commit**:
+
+```bash
+cd ~
+git clone https://github.com/stevenlovegrove/Pangolin.git
+cd Pangolin
+git checkout 86eb4975fc4fc8b5d92148c2e370045ae9bf9f5d
+mkdir build && cd build
+cmake .. -DCMAKE_BUILD_TYPE=Release
+make -j16
+sudo make install
+```
+
+---
+
+## NVIDIA Driver, CUDA, and cuDNN
+
+Install:
+
+* NVIDIA Driver (compatible with CUDA 11.8)
+* CUDA **11.8**
+* cuDNN (matching CUDA 11.8)
+
+Ensure `cuda_runtime.h` is available at:
+
+```
+/usr/local/cuda-11.8/targets/x86_64-linux/include
+```
+
+---
+
+## LibTorch (C++ API)
+
+```bash
+wget -O LibTorch.zip https://download.pytorch.org/libtorch/cu118/libtorch-cxx11-abi-shared-with-deps-2.0.1%2Bcu118.zip
+sudo unzip LibTorch.zip -d /usr/local
+```
+
+---
+
+## OpenCV 3.4.0
+
+ORB-SLAM3 requires **OpenCV 3.4.0**.
+Please install this version explicitly (system OpenCV versions >4.x are not supported).
+
+---
+
+## ONNX Runtime (C++ API)
+
+### Download ONNX Runtime (GPU)
+
+Download the **precompiled GPU version**:
+
+```
+https://github.com/microsoft/onnxruntime/releases/download/v1.16.1/onnxruntime-linux-x64-gpu-1.16.1.tgz
+```
+
+Extract and place it inside the `Thirdparty/` directory:
+
+```
+SELM-SLAM3/Thirdparty/onnxruntime-linux-x64-gpu-1.16.1/
+```
+
+---
+
+## SuperPoint & LightGlue Models (ONNX)
+
+### Download Models
+
+Models were obtained from:
+
+[https://github.com/AIDajiangtang/Superpoint-LightGlue-Image-Stiching](https://github.com/AIDajiangtang/Superpoint-LightGlue-Image-Stiching)
+
+Merge the split zip files:
+
+```bash
+cat superpoint_lightglue.zip.00* > superpoint_lightglue.zip
+unzip superpoint_lightglue.zip
+```
+
+### Model Paths
+
+Place the ONNX models under:
+
+```
+SELM-SLAM3/Weights/BBPretrained_Models/
+```
+
+Required CMake options:
+
+```bash
+-DBBSUPERPOINT_WEIGHT_PATH="$SUPERSLAM3_HOME/Weights/BBPretrained_Models/superpoint.onnx"
+-DBBLIGHTGLUE_WEIGHT_PATH="$SUPERSLAM3_HOME/Weights/BBPretrained_Models/superpoint_lightglue.onnx"
+```
+
+---
+
+## Building SELM-SLAM3
+
+```bash
+cd ~
+git clone git@github.com:banafshebamdad/SELM-SLAM3.git
+cd SELM-SLAM3
+```
+
+Ensure CUDA headers are visible in `build.sh`:
+
+```bash
+-DCUDA_INCLUDE_PATH="/usr/local/cuda-11.8/targets/x86_64-linux/include"
+```
+
+Then build:
+
+```bash
+chmod +x build.sh
+./build.sh
+```
+
+---
+
+## Dataset Conversion (TartanAir)
+
+To convert TartanAir datasets into ORB-SLAM3 format:
 
 🔗 [TartanAir to ORB-SLAM3 Converter](https://github.com/banafshebamdad/groundtruth_generation/tree/master/scripts/TartanAir/tartanair_convertor)
 
-If you have any questions about how to use the script, feel free to reach out at bamdad@ifi.uzh.ch or banafshebamdad@gmail.com.
+---
 
-# Under construction ...
+## Related Publication
+
+**M. Bamdad**, H.-P. Hutter, A. Darvishy
+*Deep Learning-Powered Visual SLAM Aimed at Assisting Visually Impaired Navigation*
+20th International Conference on Computer Vision Theory and Applications (VISAPP), 2025
+
+---
+
+## Contact
+
+For questions or issues:
+
+* **[bamdad@ifi.uzh.ch](mailto:bamdad@ifi.uzh.ch)**
+* **[banafshebamdad@gmail.com](mailto:banafshebamdad@gmail.com)**
+
+---
+
+## Status
+
+🚧 **Under development**
+Documentation and evaluation scripts are being finalized.
+
+*Last updated: December 12, 2025*
+
