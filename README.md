@@ -194,11 +194,20 @@ To convert TartanAir datasets into ORB-SLAM3 format:
 
 ---
 
-## Related Publication
+## Citation
 
-**M. Bamdad**, H.-P. Hutter, A. Darvishy
-*Deep Learning-Powered Visual SLAM Aimed at Assisting Visually Impaired Navigation*
-20th International Conference on Computer Vision Theory and Applications (VISAPP), 2025
+If you use SELM-SLAM3 in your research, please cite:
+
+```bibtex
+@inproceedings{Bamdad2025SELM,
+  title     = {Deep Learning-Powered Visual SLAM Aimed at Assisting Visually Impaired Navigation},
+  author    = {Bamdad, M. and Hutter, H.-P. and Darvishy, A.},
+  booktitle = {Proceedings of the 20th International Conference on Computer Vision Theory and Applications (VISAPP)},
+  year      = {2025},
+  publisher = {SCITEPRESS},
+  url       = {https://www.scitepress.org/Papers/2025/133382/133382.pdf}
+}
+```
 
 ---
 
