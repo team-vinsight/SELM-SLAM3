@@ -108,7 +108,7 @@ sudo unzip LibTorch.zip -d /usr/local
 
 ## OpenCV 3.4.0
 
-Please install this version explicitly (system OpenCV versions >4.x are not supported).
+The code has been tested with OpenCV 3.4.x.
 
 ---
 
