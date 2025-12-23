@@ -4,6 +4,7 @@
   | <b><a href="https://www.scitepress.org/Papers/2025/133382/133382.pdf">Paper</a></b> |
   <b><a href="https://github.com/banafshebamdad/SELM-SLAM3/issues">Support</a></b> |
 </p>
+
 SELM-SLAM3 is a deep learning–enhanced RGB-D SLAM framework built upon **ORB-SLAM3**.
 It integrates **SuperPoint** for feature extraction and **LightGlue** for feature matching using **ONNX Runtime (C++ API)**, enabling robust and efficient inference without Python or PyTorch at runtime.
 
