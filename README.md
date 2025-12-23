@@ -262,7 +262,7 @@ If you use SELM-SLAM3 in your research, please cite:
 
 ## Support
 
-For **bugs, build issues, and usage questions**, please open a **GitHub Issue** in this repository.  
+For **bugs, build issues, and usage questions**, please open a **[GitHub Issue](https://github.com/banafshebamdad/SELM-SLAM3/issues)** in this repository.  
 This helps keep discussions public and benefits other users as well.
 
 ## Contact
