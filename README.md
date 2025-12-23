@@ -80,7 +80,11 @@ sudo make install
 ```
 
 ---
+## DBoW
 
+**DBoW** inherited unchanged from [SUPERSLAM3](https://github.com/isarlab-department-engineering/SUPERSLAM3?tab=readme-ov-file#dbow3-dbow2-pangolin-and-g2o-included-in-thirdparty-folder).
+
+---
 ## NVIDIA Driver, CUDA, and cuDNN
 
 Install:
