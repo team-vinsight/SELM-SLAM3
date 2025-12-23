@@ -278,5 +278,5 @@ This helps keep discussions public and benefits other users as well.
 🚧 **Under development**
 Documentation and evaluation scripts are being finalized.
 
-*Last updated: December 12, 2025*
+*Last updated: December 23, 2025*
 
