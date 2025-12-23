@@ -260,12 +260,16 @@ If you use SELM-SLAM3 in your research, please cite:
 
 ---
 
+## Support
+
+For **bugs, build issues, and usage questions**, please open a **GitHub Issue** in this repository.  
+This helps keep discussions public and benefits other users as well.
+
 ## Contact
 
-For questions or issues:
+* **bamdad@ifi.uzh.ch**
+* **banafshebamdad@gmail.com**
 
-* **[bamdad@ifi.uzh.ch](mailto:bamdad@ifi.uzh.ch)**
-* **[banafshebamdad@gmail.com](mailto:banafshebamdad@gmail.com)**
 
 ---
 
