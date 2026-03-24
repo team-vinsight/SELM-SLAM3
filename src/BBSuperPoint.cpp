@@ -10,6 +10,8 @@
 #include <cuda_runtime.h>
 #include <onnxruntime_cxx_api.h>
 
+#include <algorithm>
+#include <cstdlib>
 #include <iostream>
 #include <string>
 
@@ -58,8 +60,11 @@ namespace SELMSLAM {
     // Run on CPU
     void BBSuperPoint::featureExtractor(cv::InputArray image, cv::InputArray mask, std::vector<cv::KeyPoint>& keypoints, cv::OutputArray& descriptors) {
 
-        // @todo Fr. Dez. 8, 2023 read from setting file
-        int nFeatures = 1200; // 200 500, 750, 900, 1000, 1200
+        // Allow tuning via environment variable (default is lower for better runtime speed).
+        int nFeatures = 600;
+        if(const char* envMaxFeat = std::getenv("SELM_SP_MAX_FEATURES")) {
+            nFeatures = std::max(100, atoi(envMaxFeat));
+        }
 
         Ort::Env env(ORT_LOGGING_LEVEL_WARNING, "BBSuperPoint");
 
@@ -67,6 +72,23 @@ namespace SELMSLAM {
 
         sessionOptions.SetIntraOpNumThreads(1); // !!! ACHTUNG !!!  check whether is required for GPU execusion
         sessionOptions.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_ALL);
+
+        // Prefer CUDA for SuperPoint inference to avoid CPU bottlenecks.
+        bool useCuda = true;
+        if(const char* envUseCuda = std::getenv("SELM_SP_USE_CUDA")) {
+            useCuda = std::string(envUseCuda) != "0";
+        }
+        if(useCuda) {
+            const auto& api = Ort::GetApi();
+            OrtCUDAProviderOptionsV2* cuda_options = nullptr;
+            api.CreateCUDAProviderOptions(&cuda_options);
+            std::vector<const char*> keys{"device_id"};
+            std::vector<const char*> values{"0"};
+            api.UpdateCUDAProviderOptions(cuda_options, keys.data(), values.data(), keys.size());
+            api.SessionOptionsAppendExecutionProvider_CUDA_V2(sessionOptions, cuda_options);
+            api.ReleaseCUDAProviderOptions(cuda_options);
+        }
+
         static Ort::Session extractorSession(env, this->m_modelPath.c_str(), sessionOptions);
 
         cv::Mat img = image.getMat();
@@ -91,22 +113,17 @@ namespace SELMSLAM {
 
         // The SuperPoint model is run using the ONNX Runtime, and keypoints and descriptors are extracted from the model's output tensors.
 
-        cout << endl << "B.B In BBSuperPoint::featureExtractor. Before running SuperPoint model." << endl;
         TIC
         std::vector<Ort::Value> outputs = extractorSession.Run(run_options, input_names, &inputTensor, 1, output_names, 3);
         TOC
-
-        cout << endl << "B.B In BBSuperPoint::featureExtractor. After running SuperPoint model." << endl;
 
         std::vector<int64_t> kpshape = outputs[0].GetTensorTypeAndShapeInfo().GetShape();
         int64* kp = (int64*)outputs[0].GetTensorMutableData<void>();
         int keypntcounts = kpshape[1];
 
-        // To extract only nFeature from the frame, uncomment the following commented code and comment the following line.
-        nFeatures = keypntcounts;
-        // if (keypntcounts < nFeatures) {
-        //     nFeatures = keypntcounts;
-        // }
+        if (keypntcounts < nFeatures) {
+            nFeatures = keypntcounts;
+        }
 
         // keypoints.resize(keypntcounts);
         keypoints.resize(nFeatures);
@@ -114,7 +131,6 @@ namespace SELMSLAM {
         float* scores = (float*)outputs[1].GetTensorMutableData<void>();
         std::vector<ScoreIndex> scoreIndices;
 
-        cout << "Scores: " << endl << "--------";
         for (int i = 0; i < keypntcounts; i++) {
             ScoreIndex si;
             si.value = scores[i];

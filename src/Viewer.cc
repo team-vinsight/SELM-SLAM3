@@ -20,6 +20,7 @@
 #include "Viewer.h"
 #include <pangolin/pangolin.h>
 
+#include <cstdlib>
 #include <mutex>
 
 namespace ORB_SLAM3
@@ -192,8 +193,19 @@ void Viewer::Run() {
     Twc.SetIdentity();
     pangolin::OpenGlMatrix Ow; // Oriented with g in the z axis
     Ow.SetIdentity();
-    // cv::namedWindow("ORB-SLAM3: Current Frame"); commented by B.B
-    cv::namedWindow("SELM-SLAM3: Current Frame");
+
+    bool showFrameFeed = false;
+    const char* showFeedEnv = std::getenv("SELM_SHOW_FEED");
+    if(showFeedEnv && std::string(showFeedEnv) == "1") {
+        try {
+            cv::namedWindow("SELM-SLAM3: Current Frame");
+            showFrameFeed = true;
+            cout << "Viewer: OpenCV frame feed enabled (SELM_SHOW_FEED=1)." << endl;
+        }
+        catch(const cv::Exception& e) {
+            cerr << "Viewer: OpenCV HighGUI unavailable, disabling frame feed. " << e.what() << endl;
+        }
+    }
 
     bool bFollow = true;
     bool bLocalizationMode = false;
@@ -307,10 +319,16 @@ void Viewer::Run() {
             cv::resize(toShow, toShow, cv::Size(width, height));
         }
 
-        // cv::imshow("ORB-SLAM3: Current Frame", toShow); commented by B.B
-        cv::imshow("SELM-SLAM3: Current Frame", toShow);
-
-        cv::waitKey(mT);
+        if(showFrameFeed) {
+            try {
+                cv::imshow("SELM-SLAM3: Current Frame", toShow);
+                cv::waitKey(mT);
+            }
+            catch(const cv::Exception& e) {
+                cerr << "Viewer: OpenCV frame feed failed at runtime, disabling it. " << e.what() << endl;
+                showFrameFeed = false;
+            }
+        }
 
         // B.B Jusqu'ici
 

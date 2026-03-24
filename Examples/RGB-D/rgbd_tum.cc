@@ -98,8 +98,11 @@ void LoadImages(const string &strAssociationFilename, vector<string> &vstrImageF
 float matchThresh = 0.0f;
 
 int main(int argc, char **argv) {
-
-    BBLogger::setFilename("/home/banafshe/SUPERSLAM3/my_logs/BB_monitoringBBLogger.log");
+#ifdef BBLOGFILE_PATH
+    BBLogger::setFilename(std::string(BBLOGFILE_PATH) + "BB_monitoringBBLogger.log");
+#else
+    BBLogger::setFilename("BB_monitoringBBLogger.log");
+#endif
 
     if(argc < 5) {
         cerr << endl << "Usage: ./rgbd_tum path_to_vocabulary path_to_settings path_to_sequence path_to_association" << endl;

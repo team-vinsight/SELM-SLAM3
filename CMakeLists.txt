@@ -48,20 +48,16 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall   -O3")
 set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -march=native")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=native")
 
-# Check C++14 or C++0x support
+# Check C++14 support
 include(CheckCXXCompilerFlag)
-CHECK_CXX_COMPILER_FLAG("-std=c++14" COMPILER_SUPPORTS_CXX11)
-CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
-if(COMPILER_SUPPORTS_CXX11)
-   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+CHECK_CXX_COMPILER_FLAG("-std=c++14" COMPILER_SUPPORTS_CXX14)
+if(COMPILER_SUPPORTS_CXX14)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
    add_definitions(-DCOMPILEDWITHC11)
-   message(STATUS "Using flag -std=c++14.")
-elseif(COMPILER_SUPPORTS_CXX0X)
-   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
-   add_definitions(-DCOMPILEDWITHC0X)
-   message(STATUS "Using flag -std=c++0x.")
+    add_definitions(-DUSE_DBOW2)
+    message(STATUS "Using flag -std=c++14.")
 else()
-   message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++14 support. Please use a different C++ compiler.")
+    message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++14 support. Please use a different C++ compiler.")
 endif()
 
 message("3. ::: Banafshe is asking for the PROJECT_SOURCE_DIR=/home/banafshe/SUPERSLAM3 :::")
@@ -114,6 +110,8 @@ ${Pangolin_INCLUDE_DIRS}
 ${TORCH_INCLUDE_DIRS}
 ${ONNXRUNTIME_INCLUDE_DIRS}
 ${CUDA_INCLUDE_PATH}
+${PROJECT_SOURCE_DIR}/Thirdparty/g2o
+${PROJECT_SOURCE_DIR}/Thirdparty/g2o/build
 #${TORCH_INCLUDES_2}
 )
 
@@ -202,6 +200,8 @@ src/BBLogger.cpp
 include/BBLogger.hpp
 )
 
+# Disable g2o logging to avoid spdlog/fmt version conflicts
+set(G2O_USE_LOGGING OFF CACHE BOOL "" FORCE)
 add_subdirectory(Thirdparty/g2o)
 
 if(DEFINED SUPERPOINT_WEIGHTS_PATH)
@@ -237,7 +237,6 @@ ${OpenCV_LIBS}
 ${EIGEN3_LIBS}
 ${Pangolin_LIBRARIES}
 ${PROJECT_SOURCE_DIR}/Thirdparty/DBoW2/lib/libDBoW2.so
-${PROJECT_SOURCE_DIR}/Thirdparty/DBow3/build/src/libDBoW3.so
 ${PROJECT_SOURCE_DIR}/Thirdparty/g2o/lib/libg2o.so
 ${PROJECT_SOURCE_DIR}/Thirdparty/onnxruntime-linux-x64-gpu-1.16.1/lib/libonnxruntime.so
 -lboost_serialization

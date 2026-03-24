@@ -376,6 +376,17 @@ Frame::Frame(const cv::Mat &imGray, const cv::Mat &imDepth, const double &timeSt
     
     cout << endl << "B.B In Frame::Frame, after extracting ORB/SP features. mvKeys size=" << N << endl;
 
+    // Debug: Check consistency of keypoint vectors
+    if (mvKeys.size() != mvKeysUn.size()) {
+        std::cerr << "[ERROR] mvKeys.size() != mvKeysUn.size(): " << mvKeys.size() << " vs " << mvKeysUn.size() << std::endl;
+    }
+    if (N != (int)mvKeys.size()) {
+        std::cerr << "[ERROR] N != mvKeys.size(): " << N << " vs " << mvKeys.size() << std::endl;
+    }
+    if (N != (int)mvKeysUn.size()) {
+        std::cerr << "[ERROR] N != mvKeysUn.size(): " << N << " vs " << mvKeysUn.size() << std::endl;
+    }
+
     if(mvKeys.empty()) {
         return;
     }
@@ -1423,12 +1434,22 @@ void Frame::ComputeStereoFromRGBD(const cv::Mat &imDepth) {
     mvDepth = vector<float>(N, -1);
 
     for(int i = 0; i < N; i++) {
+        if (i >= (int)mvKeys.size() || i >= (int)mvKeysUn.size()) {
+            std::cerr << "[ERROR] Index " << i << " out of bounds for mvKeys or mvKeysUn. mvKeys.size()=" << mvKeys.size() << ", mvKeysUn.size()=" << mvKeysUn.size() << std::endl;
+            break;
+        }
         const cv::KeyPoint &kp = mvKeys[i];
         const cv::KeyPoint &kpU = mvKeysUn[i];
 
         // B.B retrieves the v and u coordinates of the current keypoint from the frame.
         const float &v = kp.pt.y;
         const float &u = kp.pt.x;
+
+        // Bounds check for image
+        if (v < 0 || u < 0 || v >= imDepth.rows || u >= imDepth.cols) {
+            std::cerr << "[WARN] Keypoint (" << u << "," << v << ") out of image bounds (" << imDepth.cols << "," << imDepth.rows << ") at i=" << i << std::endl;
+            continue;
+        }
 
         // B.B the depth of the scene at the location of the keypoint.
         const float d = imDepth.at<float>(v, u);
